@@ -1,116 +1,182 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-FlexibleAdapter-green.svg?style=flat)](https://android-arsenal.com/details/1/2207) [![Download](https://api.bintray.com/packages/davideas/maven/flexible-adapter/images/download.svg) ](https://bintray.com/davideas/maven/flexible-adapter/_latestVersion) [![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=14)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-FlexibleAdapter-green.svg?style=flat)](https://android-arsenal.com/details/1/2207) [![Download](https://api.bintray.com/packages/davideas/maven/flexible-adapter/images/download.svg) ](https://bintray.com/davideas/maven/flexible-adapter/_latestVersion)
 
 # FlexibleAdapter
 
-###### A pattern for every RecyclerView - Stable version v4.2 of 2015.12.16 - NEW! dev branch in beta: v5.0.0-b4 (usable library!)
+###### A pattern for every RecyclerView - Master branch: v4.2 of 2015.12.16 - Dev branch: v4.2
 
-####ANNOUNCEMENT: Important and Revolutionary changes are foreseen in v5.0.0. Please see [issues](https://github.com/davideas/FlexibleAdapter/issues) and [releases](https://github.com/davideas/FlexibleAdapter/releases).
+####ANNOUNCEMENT: Important changes are foreseen in v4.2.0 and in v5.0.0. Please see [issues](https://github.com/davideas/FlexibleAdapter/issues) and [releases](https://github.com/davideas/FlexibleAdapter/releases).
 
-> When initially Android introduced the RecyclerView widget, we had to implement the Adapter in several applications, again and again to provide the items for our views. Since I created this library, it has become easy to configure how views will be displayed in a list. Thanks to a library like this, nobody wants to use a ListView anymore.
-
-The FlexibleAdapter helps developers to simplify this process without to worry about the adapter anymore. It's easy to extends, it has predefined logic for different situations and prevents common mistakes.
-This library is configurable and it guides the developers (thanks to quality comments on the methods) to create a better user experience and now, even more with the new ViewHolders and new actions.
-
-#### Main functionalities (New features might still change)
-* Simple item selection with ripple effect.
-* SINGLE & MULTI selection mode.
-* Restore deleted items (undo delete), **NEW** works with Expandable items too!
-* Customizable ItemDecoration and FastScroller, **NEW** now in the library.
-* SearchFilter with Spannable text, **NEW** now items are animated. Works with sub items too!
-* Add and Remove items with custom animations.
-* **NEW!** Predefined ViewHolders.
-* **NEW!** Expandable items with <u>selection coherence</u>.
-* **NEW!** Adapter Animations with custom configuration based on adapter position and beyond.
-* **NEW!** Drag&Drop and Swipe actions with <u>selection coherence</u>.
-* **NEW!** Headers/Sections with automatic re-linkage and with sticky behaviour!
-* **NEW!** Auto mapping ViewTypes with Item interfaces.
-* **NEW!** 1 simple constructor for all events.
+#### Main functionalities
+* Base item selection (but also SINGLE & MULTI selection mode) in the Recycler View with ripple effect.
+* Undo the deleted items with custom animations.
+* Customizable FastScroller (imported library, see change log for details).
+* SearchFilter with string selection in Item titles and subtitles.
 
 #### How is made
-Some simple functionalities have been implemented thanks to the some Blogs (see at the bottom of the page), merged and methods have been improved for speed and scalability, for all Activities that use a RecyclerView.
+The base functionality is taken from different Blogs (see at the bottom of the page), merged and methods have been improved for speed and scalability, for all Activities that use a RecyclerView.
 
-* At lower level there is `SelectableAdapter` class. It provides selection functionalities and it's able to _maintain the state_ after the rotation: you just need to call the onSave/onRestore methods from the Activity!
-* At middle level, the `FlexibleAnimatorAdapter` class has been added to give some animation at startup and when user scrolls.
-* At front level, the core class `FlexibleAdapter`. It holds and handles the main list, performs actions on all different types of item paying attention at the adding and removal of the items, as well as the new concept of "selection coherence".
-* Item interfaces and predefined ViewHolders complete the whole library giving more actions to the items and configuration options to the developers and the end user.
+* At lower class there is SelectableAdapter that provides selection functionalities and it's able to _maintain the state_ after the rotation, you just need to call the onSave/onRestore methods from the Activity!
+* Then, the class FlexibleAdapter handles the content paying attention at the animations (calling notify only for the position. _Note:_ you still need to set your animation to the RecyclerView when you create it in the Activity).
+* Then you need to extend over again this class. Here you add and implement methods as you wish for your own ViewHolder and your Domain/Model class (data holder).
+
+I've put the Set click listeners at the creation and not in the Binding method, because onBindViewHolder is called at each invalidate (each notify..() methods).
+
+Finally note that, this adapter handles the basic clicks: _single_ and _long clicks_. If you need a double tap you need to implement the android.view.GestureDetector.
 
 # Screenshots
-![GridView & Secondary Functionalities](/screenshots/gridview_secondary_functionalities.png)
-![Search screen](/screenshots/search.png)
-![Undo Screen](/screenshots/undo.png)
-![Adapter Animations](/screenshots/adapter_animations.png)
-![StickyHeaders & Header Linkage & Restore items](/screenshots/stickyheaders_headerlinkage_restoreitems.png)
-![StickyHeaders & Expandable items](/screenshots/stickyheaders_expandableitems.png)
-![Multi Selection](/screenshots/multi_selection.png)
+![Main screen](/screenshots/main_screen.png) ![Multi Selection](/screenshots/multi_selection.png)
+![Search screen](/screenshots/search.png) ![Undo Screen](/screenshots/undo.png)
 
-# Setup
-```
-repositories {
-	jcenter()
-	maven {url = "http://dl.bintray.com/davideas/maven" }
-	maven {url = "https://oss.sonatype.org/content/repositories/snapshots/" } //For Snapshots
-}
-```
+#Setup
+Using JCenter
 ```
 dependencies {
-	//Using bintray.com
-	compile 'eu.davidea:flexible-adapter:4.2.0@aar'
-	compile 'eu.davidea:flexible-adapter:5.0.0-b4@aar'
-	
-	//Using JCenter
 	compile 'eu.davidea:flexible-adapter:4.2.0'
-	compile 'eu.davidea:flexible-adapter:5.0.0-b4'
-	
-	//Using MavenSnapshots repository for continuous updates from my development
-	compile 'eu.davidea:flexible-adapter:5.0.0-SNAPSHOT'
+}
+```
+Using bintray.com
+```
+repositories {
+	maven { url "http://dl.bintray.com/davideas/maven" }
+}
+dependencies {
+	compile 'eu.davidea:flexible-adapter:4.2.0@aar'
+}
+```
+Or you can just *copy* SelectableAdapter.java & FlexibleAdapter.java in your *common* package and start to *extend* FlexibleAdapter from your custom Adapter (see my ExampleAdapter).
+
+Remember to call `super(items)` or to initialize `mItems` (List already included in FlexibleAdapter) in order to manage list items.
+#### Pull requests / Issues / Improvement requests
+Feel free to contribute and ask!
+
+# Usage for Single Selection
+See [Wiki](https://github.com/davideas/FlexibleAdapter/wiki) for full details! In your Activity/Fragment creation set the Mode SINGLE.
+In onListItemClick, call *toggleSeletion* to register the selection on that position:
+``` java
+public class MainActivity extends AppCompatActivity {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		...
+		mAdapter = new YourAdapterClass(..., ..., ...);
+		mAdapter.setMode(YourAdapterClass.MODE_SINGLE);
+		...
+	}
+
+	@Override
+	public boolean onListItemClick(int position) {
+		toggleSelection(position);
+	}
 }
 ```
 
-#### Pull requests / Issues / Improvement requests
-Feel free to contribute and ask!<br/>
-Active discussion [Test FlexibleAdapter v5.0.0](https://github.com/davideas/FlexibleAdapter/issues/39).
+# Usage for Multi Selection
+See [Wiki](https://github.com/davideas/FlexibleAdapter/wiki) for full details! In your Activity/Fragment change the Modes for the _ActionMode_ object.
+``` java
+public class MainActivity extends AppCompatActivity implements
+		ActionMode.Callback {
+	...
+	@Override
+	public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+		mode.getMenuInflater().inflate(R.menu.menu_context, menu);
+		mAdapter.setMode(YourAdapterClass.MODE_MULTI);
+		return true;
+	}
+	
+	@Override
+	public void onDestroyActionMode(ActionMode mode) {
+		mAdapter.setMode(YourAdapterClass.MODE_SINGLE);
+		mAdapter.clearSelection();
+		mActionMode = null;
+	}
+}
+```
 
-# Wiki!
-I strong suggest to read the **new [Wiki](https://github.com/davideas/FlexibleAdapter/wiki) pages**.
+# Usage for Undo
+See [Wiki](https://github.com/davideas/FlexibleAdapter/wiki) for full details!
+``` java
+@Override
+public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+	switch (item.getItemId()) {
+		...
+		case R.id.action_delete:
+			//Keep synchronized the Adapter: Remove selected items from Adapter
+			mAdapter.removeItems(mAdapter.getSelectedItems());
 
-Wiki pages have been completely reviewed to support all the coming functionalities from 5.0.0.
+			//Start countdown with startUndoTimer(millisec)
+			mAdapter.startUndoTimer(7000, this); //Default 5''; where "this" is the Activity that implements OnDeleteCompleteListener.
+			mActionMode.finish();
+			return true;
+	}
+}
 
-Not all pages are filled, working in progress :-)
+@Override
+public void onDeleteConfirmed() {
+	for (Item item : mAdapter.getDeletedItems()) {
+		//Remove items from your Database. Example:
+		DatabaseService.getInstance().removeItem(item);
+	}
+}
+```
+
+# Usage for FastScroller
+See [Wiki](https://github.com/davideas/FlexibleAdapter/wiki) for full details! First add the drawable files to the project, then the layout, finally add the implementation for the Adapter and Activity/Fragment:
+``` java
+public class YourAdapterClass extends FlexibleAdapter<ExampleAdapter.SimpleViewHolder, Item>
+		implements FastScroller.BubbleTextGetter {
+	...
+	@Override
+	public String getTextToShowInBubble(int position) {
+		return getItem(position).getTitle().substring(0,1).toUpperCase();
+	}
+}
+```
+``` java
+public class MainActivity extends AppCompatActivity {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		...
+		FastScroller fastScroller = (FastScroller) findViewById(R.id.fast_scroller);
+		fastScroller.setRecyclerView(mRecyclerView);
+		fastScroller.setViewsToUse(R.layout.fast_scroller, R.id.fast_scroller_bubble, R.id.fast_scroller_handle);
+	}
+	...
+}
+```
+# Usage for the Filter
+See [Wiki](https://github.com/davideas/FlexibleAdapter/wiki) for full details!
+First, call _YourAdapterClass.setSearchText()_ in the Activity, then in _YourAdapterClass.updateDataSet()_, call _filterItems()_;
+``` java
+public class YourAdapterClass extends FlexibleAdapter<ExampleAdapter.SimpleViewHolder, Item> {
+	...
+	@Override
+	public void updateDataSet(String param) {
+		//Fill and Filter mItems with your custom list
+		filterItems(DatabaseService.getInstance().getListById(param));
+	}
+}
+```
 
 # Change Log
-###### v5.0.0-b4 - 2016.02.21
-- Added **Sticky Header** functionality [See #32].
-- _IHeader_ interface has been added to identify the fact the item is a Header item, as consequence, _ISectionable_ interface now has to be assigned to the items(!!) in order for them to hold the reference to the _IHeader_ item.
-- Headers work in combination with restore items, in all situations, they can be dragged, swapped and receive the new swapped item. Support for **Orphan Headers** has been added.
-- **New clean way to filter items**. Added _IFilterable_ item interface: Items can now implement _filter()_ method in order to be collected for the filtered list. 
-- Brand new logic, how a removed item saves restoration info, now it never misses a restore. 
-- Added a good _DividerItemDecorator_ into library [See #33].
-- Added support for _isSelectable()_, _isEnabled()_.
-- Added methods _addSubItems()_ and _addAllSubItemsFrom()_.
-- Code optimization, nice to mention: removed unnecessary 8 casts; better use of Payload when _notifyItemChanged_ is triggered; Much faster restoration with big numbers (~1000)
+###### v4.2.0 - 2015.12.12
+- Added _isEmpty()_.
+- Added new constructor to initialize list items [See #12].
+- Moved _onDeletedConfirmed()_ in a new listener to pass as parameter to the method _startUndoTimer()_ [See #10].
+- Deprecated _OnUpdateListener_ and some relative functions.
+- **Note:** _updateDataSetAsync()_ has been **deprecated** and will be removed soon from next major version. Use _updateDataSet()_
+  instead. **FilterAsyncTask** will not be used anymore to load data at startup: there's no advantage to use an Asynchronous loading,
+  usually the list is already loaded Asynchronously somewhere else.
+- Removed _static_ declaration from the following methods: _hasSearchText(); getSearchText(); setSearchText(String searchText)_.
+- Adapted example App accordingly.
 
-###### v5.0.0-b3 - 2016.02.08
-- **Header/Section** with new **ISectionable** item [See #31]. Still need to add features on this.
-- **Redesigned** the Item interfaces to simplify development and re-usability.
-- **Merged** the _FlexibleExpandableAdapter_ into _FlexibleAdapter_.
-- mItems is now private and fully synchronized, the new method updateDataSet allows to update full content and notifyChange.
-- **Auto-mapping** of the ViewType (using Layout resourceId) when using implementation of _IFlexibleItem_ interface.
-- Possibility to disjoint Creation and Binding of the View Holder in the Model items OR (user choice) to create and bind the view inside the Adapter (as usual).
-- 3 new configurations for _FlexibleViewHolder_ in combination with onTouch, selection and ActionMode state.
-- Customizable _view elevation_ on item activation [See #38].
-- Better implementation of Expandable items.
-- Added possibility to have Expandables inside another Expandable. Limits are described in the javadoc description of FlexibleAdapter.
-- Added support for **Payload** when notifyItemChanged is called.
-- New method _addItemWithDelay()_.
-- Use of Log.error instead of Log.warn.
-- New options menu for example App for the showcase.
-- FlexibleAdapter is not anymore abstract.
+###### v4.1.0 - 2015.11.29
+- Improved **Undo** functionality: added new callback _onDeleteConfirmed_ in OnUpdateListener. See [Wiki](https://github.com/davideas/FlexibleAdapter/wiki) for full details! 
+- Improved **Filter** functionality: added new intelligent function _filterItems_. See [Wiki](https://github.com/davideas/FlexibleAdapter/wiki) for full details!
+- Logs are now in verbose level.
+- Adapted example App accordingly.
 
 ###### Old releases
 See [releases](https://github.com/davideas/FlexibleAdapter/releases) for old versions.
 
-v5.0.0-b2 - 2016.01.31 | v5.0.0-b1 - 2016.01.03 |
-v4.2.0 - 2015.12.12 | v4.1.0 - 2015.11.29 |
 v4.0.1 - 2015.11.01 | v4.0 - 2015.10.18 |
 v3.1 - 2015.08.18 | v3.0 - 2015.07.29 |
 v2.2 - 2015.07.20 | v2.1 - 2015.07.03 |
@@ -123,14 +189,9 @@ http://enoent.fr/blog/2015/01/18/recyclerview-basics/
 
 https://www.grokkingandroid.com/statelistdrawables-for-recyclerview-selection/
 
-# Imported libraries
-
-[LollipopContactsRecyclerViewFastScroller](https://github.com/AndroidDeveloperLB/LollipopContactsRecyclerViewFastScroller)<br/>
-Improved and adapted to work in conjunction with `FlexibleAnimatorAdapter`.
-
 # License
 
-    Copyright 2016 Davide Steduto
+    Copyright 2015 Davide Steduto
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
