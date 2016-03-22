@@ -3,6 +3,7 @@ package eu.davidea.examples.flexibleadapter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import eu.davidea.examples.models.AbstractExampleItem;
@@ -21,7 +22,7 @@ import eu.davidea.flexibleadapter.items.ISectionable;
 public class DatabaseService {
 
 	private static DatabaseService mInstance;
-	private static final int ITEMS = 90, SUB_ITEMS = 3, HEADERS = 30;
+	private static final int ITEMS = 90, SUB_ITEMS = 5, HEADERS = 30;
 	private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
 	//TODO FOR YOU: Use userLearnedSelection from settings
@@ -40,9 +41,9 @@ public class DatabaseService {
 
 	DatabaseService() {
 		for (int i = 0; i < ITEMS; i++) {
-			mItems.add(i % 3 == 0 ?
-					newExpandableItem(i + 1, i % (ITEMS/HEADERS) == 0) :
-					newSimpleItem(i + 1, i % (ITEMS/HEADERS) == 0));
+			mItems.add(i > -10 ?
+					newExpandableItem(i + 1, false) :
+					newSimpleItem(i + 1, false));
 		}
 	}
 
@@ -82,12 +83,19 @@ public class DatabaseService {
 		//Let's initially expand the first parent item with subElements
 //		expandableItem.setExpanded(i == 3);
 //		expandableItem.setSelectable(false);
-		expandableItem.setTitle("Expandable Item " + i);
+		expandableItem.setTitle("====  Expandable Item " + i);
 		//SubItems are not expandable by default, but thy might be if extends/implements IExpandable
+		HeaderItem header = null;
 		for (int j = 1; j <= SUB_ITEMS; j++) {
-			SubItem subItem = new SubItem(expandableItem.getId() + "S" + j);
-			subItem.setTitle("Sub Item " + j);
-			expandableItem.addSubItem(subItem);
+			if (j == 1 || j == 3) {
+				header = newHeader(j*10 + i*10000);
+				header.setTitle("Header item " + i+j);
+			} else {
+				SubItem subItem = new SubItem(expandableItem.getId() + "S" + j);
+				subItem.setHeader(header);
+				subItem.setTitle("Sub Item " + j);
+				expandableItem.addSubItem(subItem);
+			}
 		}
 		return expandableItem;
 	}

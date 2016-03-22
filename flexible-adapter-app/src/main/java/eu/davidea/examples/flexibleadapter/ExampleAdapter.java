@@ -47,7 +47,7 @@ public class ExampleAdapter extends FlexibleAdapter<AbstractFlexibleItem> {
 		//TODO: We may create calls like removeAll, addAll or refreshList in order to animate changes
 
 		//Add example view
-		addUserLearnedSelection(true);
+//		addUserLearnedSelection(true);
 	}
 
 	public void addUserLearnedSelection(boolean scrollToPosition) {
