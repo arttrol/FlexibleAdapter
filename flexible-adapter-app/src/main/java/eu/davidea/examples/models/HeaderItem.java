@@ -11,6 +11,7 @@ import java.util.List;
 import eu.davidea.examples.flexibleadapter.R;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
+import eu.davidea.flexibleadapter.items.ISectionable;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**
