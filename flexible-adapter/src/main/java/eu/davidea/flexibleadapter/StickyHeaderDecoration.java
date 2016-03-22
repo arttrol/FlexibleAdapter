@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.davidea.flexibleadapter.items.IExpandable;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.flexibleadapter.items.IHeader;
 
 /**
@@ -106,7 +108,7 @@ class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
 		View headerView = getHeader(recyclerView, adapterPos);
 		//A header is found?
 		if (headerView != null) {
-			int top = getHeaderTop(recyclerView, child, adapterPos);
+			int top = getHeaderTop(recyclerView, child, adapterPos, headerView.getHeight());
 			Log.v("onDrawOver", "adapterPos=" + adapterPos + " top=" + top);
 			//Draw header!
 			int left = child.getLeft();
@@ -123,9 +125,10 @@ class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
 	 * @param recyclerView the RecyclerView
 	 * @param child        the current child item view
 	 * @param adapterPos   the current Adapter position
+	 * @param headerHeight
 	 * @return the new top (usually 0) of the header view, or the offset if next header pushes the previous offscreen
 	 */
-	private int getHeaderTop(RecyclerView recyclerView, View child, int adapterPos) {
+	private int getHeaderTop(RecyclerView recyclerView, View child, int adapterPos, int headerHeight) {
 		int top = Math.max(0, (int) child.getY());
 		IHeader current = mAdapter.getHeaderStickyOn(adapterPos);
 		if (current == null) return top;
@@ -134,11 +137,24 @@ class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
 		if (recyclerView.getChildCount() < 1) return top;
 		View nextItemView = recyclerView.getChildAt(1);
 		int adapterPosHere = recyclerView.getChildAdapterPosition(nextItemView);
-		IHeader next = mAdapter.getHeaderStickyOn(adapterPosHere);
+		IHeader nextHeader = mAdapter.getHeaderStickyOn(adapterPosHere);
 
-		if (next != null && !next.equals(current)) {
+		IFlexible curr = mAdapter.getItem(adapterPosHere - 1);
+		IFlexible nextItem = mAdapter.getItem(adapterPosHere);
+
+		if (curr instanceof IExpandable){
+			return - headerHeight;
+		}
+
+		if (nextHeader != null && !nextHeader.equals(current)) {
 			View nextHeaderView = getHeader(recyclerView, adapterPosHere);
-			if (nextHeaderView == null) return top;
+			if (nextHeaderView == null) {
+				if (nextItem instanceof IExpandable){
+					return (int) Math.min(0, nextItemView.getY() - headerHeight);
+				} else {
+					return top;
+				}
+			}
 
 			int offset = (int) nextItemView.getY() - nextHeaderView.getHeight();
 			if (offset < 0) {

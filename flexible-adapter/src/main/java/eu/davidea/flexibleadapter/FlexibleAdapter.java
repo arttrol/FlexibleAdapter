@@ -581,6 +581,13 @@ public class FlexibleAdapter<T extends IFlexible>
 		//When headers are visible and sticky, get the previous header
 		for (int i = position; i >= 0; i--) {
 			T item = getItem(i);
+			// for expanded item return first sub-header from subitems
+			if(isExpandable(item)){
+				List subItems = ((IExpandable) item).getSubItems();
+				if(null!=subItems && !subItems.isEmpty()){
+					return  ((ISectionable) subItems.get(0)).getHeader();
+				}
+			}
 			if (isHeader(item)) return (IHeader) item;
 			IHeader header = getHeaderOf(item);
 			if (header != null) return  header;
