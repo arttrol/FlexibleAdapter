@@ -88,10 +88,6 @@ public class MainActivity extends AppCompatActivity implements
 			}
 		}
 	});
-	/**
-	 * FAB
-	 */
-	private FloatingActionButton mFab;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +102,6 @@ public class MainActivity extends AppCompatActivity implements
 		FlexibleAdapter.enableLogs(true);
 		mAdapter = new ExampleAdapter(this);
 		//Experimenting NEW features
-		mAdapter.setAnimationOnScrolling(true);
-		mAdapter.setAnimationOnReverseScrolling(true);
 		mAdapter.setAutoCollapseOnExpand(false);
 		mAdapter.setAutoScrollOnExpand(true);
 		mAdapter.setRemoveOrphanHeaders(false);
@@ -131,40 +125,8 @@ public class MainActivity extends AppCompatActivity implements
 		mAdapter.setLongPressDragEnabled(true);//Enable long press to drag items
 		mAdapter.setSwipeEnabled(true);//Enable swipe items
 		mAdapter.showAllHeaders();//Show Headers at startUp!
+		mAdapter.enableStickyHeaders(3);
 		//Add sample item on the top (not part of library)
-		mAdapter.addUserLearnedSelection(savedInstanceState == null);
-
-		//FAB
-		mFab = (FloatingActionButton) findViewById(R.id.fab);
-		mFab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				destroyActionModeIfCan();
-
-				for (int position = 0; position <= mAdapter.getItemCountOfTypes(R.layout.recycler_expandable_row) + 1; position++) {
-					//Every 3 positions I want to create an expandable
-					AbstractExampleItem item = (position % 3 == 0 ?
-							DatabaseService.newExpandableItem(position, false) :
-							DatabaseService.newSimpleItem(position, false));
-					//Add only if we don't have it
-					if (!DatabaseService.getInstance().getListById().contains(item)) {
-						DatabaseService.getInstance().addItem(position, item);//This is the original list
-						//For my example, the adapter position must be adjusted according to
-						//all child and headers currently visible
-						int adapterPos = position + mAdapter.getItemCountOfTypes(
-								R.layout.recycler_uls_row,
-								R.layout.recycler_expandable_row,
-								R.layout.recycler_child_row,
-								R.layout.recycler_header_row);
-						//Adapter's list is a copy, to animate the item you must call addItem on the new position
-						mAdapter.addItem(adapterPos, item);
-						Toast.makeText(MainActivity.this, "Added New " + item.getTitle(), Toast.LENGTH_SHORT).show();
-						mRecyclerView.smoothScrollToPosition(position);
-						break;
-					}
-				}
-			}
-		});
 
 		//With FlexibleAdapter v5.0.0 we don't need to call this function anymore
 		//It is automatically called if Activity implements FlexibleAdapter.OnUpdateListener
@@ -298,20 +260,6 @@ public class MainActivity extends AppCompatActivity implements
 			mAdapter.filterItems(DatabaseService.getInstance().getListById(), 450L);
 		}
 
-		if (mAdapter.hasSearchText()) {
-			//mFab.setVisibility(View.GONE);
-			ViewCompat.animate(mFab)
-					.scaleX(0f).scaleY(0f)
-					.alpha(0f).setDuration(100)
-					.start();
-		} else {
-
-			//mFab.setVisibility(View.VISIBLE);
-			ViewCompat.animate(mFab)
-					.scaleX(1f).scaleY(1f)
-					.alpha(1f).setDuration(100)
-					.start();
-		}
 		return true;
 	}
 
